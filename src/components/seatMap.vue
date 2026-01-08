@@ -24,7 +24,7 @@ const initMap = async () => {
     return
   }
 
-  const backgroundImageUrl = new URL(`../assets/background/${props.floor}.png`, import.meta.url)
+  const backgroundImageUrl = new URL(`../assets/background/${props.floor}.webp`, import.meta.url)
     .href
 
   const leafer = new Leafer({ view: 'leafer-view', type: 'design' })
@@ -38,13 +38,13 @@ const initMap = async () => {
   leafer.add(group)
 
   const scaleConfig: Record<string, number> = {
-    '4F': 0.188,
-    '5F': 0.07,
+    '4F': 0.376,
+    '5F': 0.14,
   }
   const currentScale = scaleConfig[props.floor] || 0.188
 
-  const imgX = (-5000 * currentScale) / 2
-  const imgY = (-5000 * currentScale) / 2
+  const imgX = (-2500 * currentScale) / 2
+  const imgY = (-2500 * currentScale) / 2
 
   const backgroundImage = new Image({
     x: imgX,
@@ -73,6 +73,13 @@ const initMap = async () => {
       group.add(seatRect)
     }
   }
+
+  const leaferHeight = leafer.height ?? 1
+  const leaferWidth = leafer.width ?? 1
+  const groupHeight = Math.max(group.height ?? 1, 1)
+  const groupWidth = Math.max(group.width ?? 1, 1)
+
+  group.scale = Math.min((leaferHeight / groupHeight) * 0.8, (leaferWidth / groupWidth) * 0.8)
 }
 
 onMounted(() => {
