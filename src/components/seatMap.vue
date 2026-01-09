@@ -3,6 +3,7 @@ import { onMounted, watch, onUnmounted, shallowRef, ref } from 'vue'
 import { Primitive } from 'reka-ui'
 import { Leafer, Rect, Image, Group } from 'leafer-ui'
 import '@leafer-in/viewport'
+import { loadSeatData, type SeatRecord } from '@/utils/seatData'
 
 const props = defineProps<{
   floor: '4F' | '5F'
@@ -15,12 +16,16 @@ const renderToken = shallowRef(0)
 const resizeObserver = shallowRef<ResizeObserver | null>(null)
 const seatRects = shallowRef<Map<string, Rect>>(new Map())
 
+const getSeatFill = (seatStatusMap: Record<string, number> | undefined, seatId: string) => {
+  const status = seatStatusMap?.[seatId]
+  if (status === 0) return '#2ba471'
+  if (status === undefined || status === null || Number.isNaN(status)) return '#DDDDDD'
+  return '#d54941'
+}
+
 // 座位数据类型
 type SeatData = {
-  seats: Array<{
-    name: string
-    position: { x: number; y: number }
-  }>
+  seats: SeatRecord[]
 }
 
 // 初始化/重绘整张座位图
@@ -35,8 +40,7 @@ const initMap = async () => {
   // 按楼层异步加载座位数据
   let seatData: SeatData | null = null
   try {
-    const module = await import(`@/assets/map/${props.floor}.json`)
-    seatData = module.default as SeatData
+    seatData = await loadSeatData(props.floor)
   } catch (e) {
     console.error(`Failed to load seat data for ${props.floor}`, e)
     return
@@ -81,13 +85,6 @@ const initMap = async () => {
 
   seatRects.value = new Map()
 
-  const getSeatFill = (seatName: string) => {
-    const status = props.seatStatusMap?.[seatName]
-    if (status === 0) return '#2ba471'
-    if (status === undefined || status === null || Number.isNaN(status)) return '#DDDDDD'
-    return '#d54941'
-  }
-
   // 座位点位
   for (const seat of seatData.seats) {
     const seatRect = new Rect({
@@ -95,19 +92,21 @@ const initMap = async () => {
       y: seat.position.y,
       width: 5,
       height: 5,
-      fill: getSeatFill(seat.name),
+      fill: getSeatFill(props.seatStatusMap, seat.spaceId),
       cornerRadius: 1,
       cursor: 'pointer',
     })
 
     seatRect.on('click', () => {
-      const status = props.seatStatusMap?.[seat.name]
+      const status = seat.spaceId ? props.seatStatusMap?.[seat.spaceId] : undefined
       const statusText = status === 0 ? '可预约' : status === undefined ? '未查询' : '不可用'
-      alert(`座位 ${seat.name}：${statusText}`)
+      console.log(
+        `该座位：spaceName：${seat.spaceName}，spaceId：${seat.spaceId}，spaceCode：${seat.spaceCode}，mapName：${seat.mapName}，状态：${statusText}`,
+      )
     })
 
     group.add(seatRect)
-    seatRects.value.set(seat.name, seatRect)
+    if (seat.spaceId) seatRects.value.set(seat.spaceId, seatRect)
   }
 
   // 居中并缩放到合适大小
@@ -129,10 +128,8 @@ const initMap = async () => {
 }
 
 const applySeatStatuses = () => {
-  for (const [seatName, rect] of seatRects.value) {
-    const status = props.seatStatusMap?.[seatName]
-    rect.fill =
-      status === 0 ? '#2f8f62' : status === undefined || status === null ? '#9a9084' : '#c25649'
+  for (const [seatKey, rect] of seatRects.value) {
+    rect.fill = getSeatFill(props.seatStatusMap, seatKey)
   }
 }
 

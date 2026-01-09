@@ -97,7 +97,9 @@ const endTimeModel = computed({
   padding: 9px 12px;
   background: #fff;
   font-size: 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .input:focus {
@@ -116,7 +118,9 @@ const endTimeModel = computed({
   cursor: pointer;
   font-size: 14px;
   letter-spacing: 0.08em;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
 
 .primary:not(:disabled):hover {

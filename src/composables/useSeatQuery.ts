@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { computed, ref, watch, type Ref } from 'vue'
+import { loadSeatLookup } from '@/utils/seatData'
 
 type UseSeatQueryOptions = {
   token: Ref<string>
@@ -66,9 +67,17 @@ export const useSeatQuery = ({ token, floor }: UseSeatQueryOptions) => {
 
       const nextMap: Record<string, number> = {}
       const list = Array.isArray(data?.dataList) ? data.dataList : []
+      const seatLookup = await loadSeatLookup(floor.value)
       for (const item of list) {
-        const key = item?.spaceName || item?.spaceCode
-        if (key) nextMap[key] = Number(item?.spaceStatus)
+        const status = Number(item?.spaceStatus)
+        const spaceName = item?.spaceName
+        const spaceCode = item?.spaceCode
+        const seat =
+          (spaceName ? seatLookup.bySpaceName[String(spaceName)] : undefined) ||
+          (spaceCode ? seatLookup.bySpaceCode[String(spaceCode)] : undefined)
+        const spaceId = seat?.spaceId || ''
+
+        if (spaceId) nextMap[spaceId] = status
       }
       seatStatusMap.value = nextMap
       lastQueryTime.value = new Date().toLocaleString()
