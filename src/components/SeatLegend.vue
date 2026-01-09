@@ -19,11 +19,11 @@
 <style scoped>
 .section {
   margin-top: 16px;
-  padding: 12px 14px;
-  border-radius: 14px;
+  padding: var(--card-padding);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--panel);
-  box-shadow: 0 10px 20px rgba(20, 16, 10, 0.06);
+  box-shadow: var(--panel-shadow-md);
 }
 
 .section h3 {

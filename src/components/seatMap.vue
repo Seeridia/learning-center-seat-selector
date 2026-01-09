@@ -16,11 +16,19 @@ const renderToken = shallowRef(0)
 const resizeObserver = shallowRef<ResizeObserver | null>(null)
 const seatRects = shallowRef<Map<string, Rect>>(new Map())
 
+const getThemeColor = (name: string, fallback: string) => {
+  if (typeof window === 'undefined') return fallback
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return value || fallback
+}
+
 const getSeatFill = (seatStatusMap: Record<string, number> | undefined, seatId: string) => {
   const status = seatStatusMap?.[seatId]
-  if (status === 0) return '#2ba471'
-  if (status === undefined || status === null || Number.isNaN(status)) return '#DDDDDD'
-  return '#d54941'
+  if (status === 0) return getThemeColor('--success', '#2ba471')
+  if (status === undefined || status === null || Number.isNaN(status)) {
+    return getThemeColor('--neutral', '#DDDDDD')
+  }
+  return getThemeColor('--danger', '#d54941')
 }
 
 // 座位数据类型

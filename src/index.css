@@ -23,6 +23,22 @@ body,
   --success: #2ba471;
   --danger: #d54941;
   --neutral: #DDDDDD;
+  --status-unknown: #9a9084;
+  --control-bg: #ffffff;
+  --radius-lg: 16px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --sidebar-width: 320px;
+  --sidebar-padding: 28px 24px;
+  --sidebar-shadow: -18px 0 40px rgba(20, 15, 8, 0.08);
+  --sidebar-shadow-mobile: 0 -18px 40px rgba(20, 15, 8, 0.08);
+  --card-padding: 12px 12px 14px;
+  --panel-shadow-md: 0 10px 20px rgba(20, 16, 10, 0.06);
+  --panel-shadow-lg: 0 12px 24px rgba(20, 16, 10, 0.06);
+  --panel-shadow-float: 0 14px 26px rgba(20, 16, 10, 0.18);
+  --toggle-shadow-active: 0 10px 18px rgba(20, 16, 10, 0.16);
+  --seatmap-bg: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(241, 236, 225, 0.7));
+  --status-dot-size: 10px;
 }
 
 body {
@@ -51,4 +67,20 @@ textarea {
 
 ::selection {
   background: rgba(160, 122, 71, 0.2);
+}
+
+.sidebar-card {
+  margin-top: 18px;
+  padding: var(--card-padding);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--panel-shadow-md);
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-strong);
 }

@@ -69,10 +69,10 @@ const endTimeModel = computed({
 .section {
   margin-top: 12px;
   padding: 14px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--panel);
   border: 1px solid var(--border);
-  box-shadow: 0 12px 24px rgba(20, 16, 10, 0.06);
+  box-shadow: var(--panel-shadow-lg);
 }
 
 .section h3 {
@@ -93,9 +93,9 @@ const endTimeModel = computed({
 
 .input {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 9px 12px;
-  background: #fff;
+  background: var(--control-bg);
   font-size: 14px;
   transition:
     border-color 0.2s ease,
@@ -125,7 +125,7 @@ const endTimeModel = computed({
 
 .primary:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 26px rgba(20, 16, 10, 0.18);
+  box-shadow: var(--panel-shadow-float);
 }
 
 .primary:disabled {
