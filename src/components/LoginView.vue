@@ -89,48 +89,49 @@ const handlePasswordInput = (event: Event) => {
   display: grid;
   place-items: center;
   padding: 32px 16px;
-  background: #f8fafc;
+  background: radial-gradient(circle at top, #fbf6ee 0%, #f2ede4 55%, #e9e3d8 100%);
 }
 
 .login-card {
   width: min(420px, 92vw);
-  padding: 28px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  padding: 32px 30px;
+  border-radius: 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 header h1 {
-  margin: 8px 0 8px;
-  font-size: 24px;
+  margin: 8px 0 10px;
+  font-size: 26px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .eyebrow {
   margin: 0;
   font-size: 12px;
-  letter-spacing: 0.3em;
-  color: #6b7280;
+  letter-spacing: 0.4em;
+  color: var(--muted);
   text-transform: uppercase;
 }
 
 .subtle {
-  margin: 0 0 24px;
+  margin: 0 0 26px;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .login-form {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .field {
   display: grid;
   gap: 6px;
   font-size: 14px;
-  color: #111827;
+  color: var(--text);
 }
 
 .field-label {
@@ -138,8 +139,8 @@ header h1 {
 }
 
 .field-input {
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 12px 14px;
   font-size: 15px;
   background: #fff;
@@ -148,8 +149,8 @@ header h1 {
 
 .field-input:focus {
   outline: none;
-  border-color: #111827;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.12);
+  border-color: rgba(160, 122, 71, 0.7);
+  box-shadow: 0 0 0 3px rgba(160, 122, 71, 0.18);
 }
 
 .primary {
@@ -160,13 +161,13 @@ header h1 {
   font-size: 15px;
   cursor: pointer;
   color: #fff;
-  background: #111827;
+  background: var(--accent-strong);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .primary:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 20px rgba(17, 24, 39, 0.2);
+  box-shadow: 0 14px 28px rgba(20, 16, 10, 0.18);
 }
 
 .primary:disabled {
@@ -176,7 +177,7 @@ header h1 {
 
 .error {
   margin: 0;
-  color: #b23b2b;
+  color: var(--danger);
   font-size: 13px;
 }
 </style>

@@ -6,12 +6,14 @@ import '@leafer-in/viewport'
 
 const props = defineProps<{
   floor: '4F' | '5F'
+  seatStatusMap?: Record<string, number>
 }>()
 
 const leaferRef = shallowRef<Leafer | null>(null)
 const viewRef = ref<HTMLDivElement | null>(null)
 const renderToken = shallowRef(0)
 const resizeObserver = shallowRef<ResizeObserver | null>(null)
+const seatRects = shallowRef<Map<string, Rect>>(new Map())
 
 // 座位数据类型
 type SeatData = {
@@ -77,6 +79,15 @@ const initMap = async () => {
   })
   group.add(backgroundImage)
 
+  seatRects.value = new Map()
+
+  const getSeatFill = (seatName: string) => {
+    const status = props.seatStatusMap?.[seatName]
+    if (status === 0) return '#2ba471'
+    if (status === undefined || status === null || Number.isNaN(status)) return '#DDDDDD'
+    return '#d54941'
+  }
+
   // 座位点位
   for (const seat of seatData.seats) {
     const seatRect = new Rect({
@@ -84,16 +95,19 @@ const initMap = async () => {
       y: seat.position.y,
       width: 5,
       height: 5,
-      fill: '#32cd79',
+      fill: getSeatFill(seat.name),
       cornerRadius: 1,
       cursor: 'pointer',
     })
 
     seatRect.on('click', () => {
-      alert(`You selected seat: ${seat.name}`)
+      const status = props.seatStatusMap?.[seat.name]
+      const statusText = status === 0 ? '可预约' : status === undefined ? '未查询' : '不可用'
+      alert(`座位 ${seat.name}：${statusText}`)
     })
 
     group.add(seatRect)
+    seatRects.value.set(seat.name, seatRect)
   }
 
   // 居中并缩放到合适大小
@@ -114,6 +128,14 @@ const initMap = async () => {
   }
 }
 
+const applySeatStatuses = () => {
+  for (const [seatName, rect] of seatRects.value) {
+    const status = props.seatStatusMap?.[seatName]
+    rect.fill =
+      status === 0 ? '#2f8f62' : status === undefined || status === null ? '#9a9084' : '#c25649'
+  }
+}
+
 onMounted(() => {
   initMap()
 })
@@ -122,6 +144,13 @@ watch(
   () => props.floor,
   () => {
     initMap()
+  },
+)
+
+watch(
+  () => props.seatStatusMap,
+  () => {
+    applySeatStatuses()
   },
 )
 

@@ -23,7 +23,7 @@ const handleLogin = async (username: string, userPassword: string) => {
   errorMessage.value = ''
   isLoading.value = true
   try {
-    const response = await axios.post('https://get-learning-center-token.012486b3.er.aliyun-esa.net', {
+    const response = await axios.post('https://gettoken.learning.seeridia.top', {
       username: username.trim(),
       password: userPassword,
     })
@@ -51,5 +51,5 @@ const handleLogin = async (username: string, userPassword: string) => {
     :error="errorMessage"
     @submit="handleLogin"
   />
-  <AppLayout v-else v-model:floor="currentFloor" />
+  <AppLayout v-else v-model:floor="currentFloor" :token="token || ''" />
 </template>
