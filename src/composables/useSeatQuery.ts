@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { computed, ref, watch, type Ref } from 'vue'
+import { queryStationStatusByTime } from '@/api/seatApi'
 import { loadSeatLookup } from '@/utils/seatData'
 
 type UseSeatQueryOptions = {
@@ -51,15 +51,7 @@ export const useSeatQuery = ({ token, floor }: UseSeatQueryOptions) => {
     isQuerying.value = true
     seatStatusMap.value = {}
     try {
-      const response = await axios.post(
-        'https://aiot.fzu.edu.cn/api/ibs/spaceAppoint/app/queryStationStatusByTime',
-        queryPayload.value,
-        {
-          headers: {
-            Token: token.value,
-          },
-        },
-      )
+      const response = await queryStationStatusByTime(queryPayload.value, token.value)
       const data = response?.data
       if (data?.code !== '0') {
         throw new Error(data?.msg || '查询失败')

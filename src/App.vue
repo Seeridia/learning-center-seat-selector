@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from 'axios'
 import { computed, onMounted, ref } from 'vue'
+import { fetchLoginToken } from './api/authApi'
 import LoginView from './components/LoginView.vue'
 import AppLayout from './layouts/AppLayout.vue'
 
@@ -23,7 +23,7 @@ const handleLogin = async (username: string, userPassword: string) => {
   errorMessage.value = ''
   isLoading.value = true
   try {
-    const response = await axios.post('https://gettoken.learning.seeridia.top', {
+    const response = await fetchLoginToken({
       username: username.trim(),
       password: userPassword,
     })

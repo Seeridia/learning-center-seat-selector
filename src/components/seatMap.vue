@@ -3,11 +3,16 @@ import { onMounted, watch, onUnmounted, shallowRef, ref } from 'vue'
 import { Primitive } from 'reka-ui'
 import { Leafer, Rect, Image, Group } from 'leafer-ui'
 import '@leafer-in/viewport'
-import { loadSeatData, type SeatRecord } from '@/utils/seatData'
+import { loadSeatData } from '@/utils/seatData'
+import type { SeatRecord } from '@/types/seat'
 
 const props = defineProps<{
   floor: '4F' | '5F'
   seatStatusMap?: Record<string, number>
+}>()
+
+const emit = defineEmits<{
+  (e: 'select-seat', payload: { seat: SeatRecord; status?: number }): void
 }>()
 
 const leaferRef = shallowRef<Leafer | null>(null)
@@ -111,6 +116,7 @@ const initMap = async () => {
       console.log(
         `该座位：spaceName：${seat.spaceName}，spaceId：${seat.spaceId}，spaceCode：${seat.spaceCode}，mapName：${seat.mapName}，状态：${statusText}`,
       )
+      emit('select-seat', { seat, status })
     })
 
     group.add(seatRect)
