@@ -7,7 +7,7 @@ import ReservationHistoryContainer from '../components/reservation/ReservationHi
 import ReservationHistoryView from '../components/reservation/ReservationHistoryView.vue'
 import ReservationSeatCard from '../components/reservation/ReservationSeatCard.vue'
 import ReservationTimeCard from '../components/reservation/ReservationTimeCard.vue'
-import SeatMap from '../components/SeatMap.vue'
+import SeatMap from '../components/seatMap.vue'
 import SeatQueryPanel from '../components/SeatQueryPanel.vue'
 import SeatStatsCard from '../components/SeatStatsCard.vue'
 import { useSeatReservation } from '../composables/useSeatReservation'
