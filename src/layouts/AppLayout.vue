@@ -116,7 +116,25 @@ watch(
 </script>
 
 <template>
-  <Primitive class="app-layout">
+  <Primitive class="app-layout" :data-view="activeView">
+    <div class="mobile-tabs">
+      <button
+        class="view-tab"
+        type="button"
+        :data-active="activeView === 'seat'"
+        @click="activeView = 'seat'"
+      >
+        选座
+      </button>
+      <button
+        class="view-tab"
+        type="button"
+        :data-active="activeView === 'history'"
+        @click="activeView = 'history'"
+      >
+        预约历史
+      </button>
+    </div>
     <Primitive class="main-area">
       <SeatMap
         v-show="activeView === 'seat'"
@@ -289,6 +307,10 @@ watch(
   margin-bottom: 18px;
 }
 
+.mobile-tabs {
+  display: none;
+}
+
 .sidebar-header h2 {
   margin: 6px 0;
   font-size: 22px;
@@ -343,15 +365,38 @@ watch(
     flex-direction: column;
   }
 
+  .mobile-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--panel-soft);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--panel-shadow-md);
+  }
+
+  .view-tabs {
+    display: none;
+  }
+
   .sidebar {
     width: 100%;
+    padding: 14px 16px 18px;
     border-left: none;
     border-top: 1px solid var(--border);
     box-shadow: var(--sidebar-shadow-mobile);
   }
 
+  .sidebar-header {
+    display: none;
+  }
+
   .main-area {
-    min-height: 52vh;
+    min-height: 56vh;
+  }
+
+  .app-layout[data-view='history'] .sidebar {
+    display: none;
   }
 }
 </style>
