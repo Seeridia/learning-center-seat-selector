@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { fetchLoginToken } from './api/authApi'
 import LoginView from './components/LoginView.vue'
-import AppLayout from './layouts/AppLayout.vue'
+import { RouterView } from 'vue-router'
 
 const TOKEN_KEY = 'learning_center_token'
 
@@ -51,5 +51,14 @@ const handleLogin = async (username: string, userPassword: string) => {
     :error="errorMessage"
     @submit="handleLogin"
   />
-  <AppLayout v-else v-model:floor="currentFloor" :token="token || ''" />
+  <RouterView v-else v-slot="{ Component }">
+    <KeepAlive include="SeatPage">
+      <component
+        :is="Component"
+        :floor="currentFloor"
+        :token="token || ''"
+        @update:floor="currentFloor = $event"
+      />
+    </KeepAlive>
+  </RouterView>
 </template>

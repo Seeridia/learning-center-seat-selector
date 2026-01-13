@@ -104,12 +104,12 @@ const formatLocation = (record: ReservationHistoryRecord) =>
     <div v-else class="history-list">
       <article v-for="record in props.records" :key="record.id" class="history-card">
         <div class="card-top">
-          <p class="title">{{ formatLocation(record) }}</p>
+          <p class="title">{{ formatLocation(record) }} </p>
           <span class="status" :data-tone="statusTone(record.auditStatus)">
             {{ statusLabel(record.auditStatus) }}
           </span>
         </div>
-        <p class="meta">{{ formatDate(record) }} {{ formatTimeRange(record) }}</p>
+        <p class="meta">{{ formatDate(record) }} {{ formatTimeRange(record) }} #{{ record.id }}</p>
       </article>
     </div>
 

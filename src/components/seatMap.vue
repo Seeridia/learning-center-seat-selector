@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, watch, onUnmounted, shallowRef, ref } from 'vue'
+import { nextTick, onActivated, onMounted, onUnmounted, watch, shallowRef, ref } from 'vue'
 import { Primitive } from 'reka-ui'
 import { Leafer, Rect, Image, Group } from 'leafer-ui'
 import '@leafer-in/viewport'
 import { loadSeatData } from '@/utils/seatData'
-import type { SeatRecord } from '@/types/seat'
+import type { SeatData, SeatRecord } from '@/types/seat'
 
 const props = defineProps<{
   floor: '4F' | '5F'
@@ -20,6 +20,19 @@ const viewRef = ref<HTMLDivElement | null>(null)
 const renderToken = shallowRef(0)
 const resizeObserver = shallowRef<ResizeObserver | null>(null)
 const seatRects = shallowRef<Map<string, Rect>>(new Map())
+const themeColors = shallowRef({
+  success: '#2ba471',
+  neutral: '#DDDDDD',
+  danger: '#d54941',
+})
+
+const floorScaleMap: Record<'4F' | '5F', number> = {
+  '4F': 0.377,
+  '5F': 0.14,
+}
+
+// 座位图的尺寸
+const mapBaseSize = 2500
 
 const getThemeColor = (name: string, fallback: string) => {
   if (typeof window === 'undefined') return fallback
@@ -28,21 +41,20 @@ const getThemeColor = (name: string, fallback: string) => {
 }
 
 const getSeatFill = (seatStatusMap: Record<string, number> | undefined, seatId: string) => {
+  const { success, neutral, danger } = themeColors.value
   const status = seatStatusMap?.[seatId]
-  if (status === 0) return getThemeColor('--success', '#2ba471')
+  if (status === 0) return success
   if (status === undefined || status === null || Number.isNaN(status)) {
-    return getThemeColor('--neutral', '#DDDDDD')
+    return neutral
   }
-  return getThemeColor('--danger', '#d54941')
-}
-
-// 座位数据类型
-type SeatData = {
-  seats: SeatRecord[]
+  return danger
 }
 
 // 初始化/重绘整张座位图
 const initMap = async () => {
+  await nextTick()
+  const view = viewRef.value
+  if (!view) return
   // 递增令牌，用于取消过期渲染
   const token = ++renderToken.value
   if (leaferRef.value) {
@@ -61,11 +73,17 @@ const initMap = async () => {
 
   if (token !== renderToken.value) return
 
+  themeColors.value = {
+    success: getThemeColor('--success', '#2ba471'),
+    neutral: getThemeColor('--neutral', '#DDDDDD'),
+    danger: getThemeColor('--danger', '#d54941'),
+  }
+
   const backgroundImageUrl = new URL(`../assets/background/${props.floor}.webp`, import.meta.url)
     .href
 
   const leafer = new Leafer({
-    view: viewRef.value as HTMLDivElement,
+    view,
     type: 'design',
   })
   leaferRef.value = leafer
@@ -79,14 +97,10 @@ const initMap = async () => {
   leafer.add(group)
 
   // 不同楼层的座位位置信息和背景图缩放比例不同，这里做个校准
-  const scaleConfig: Record<string, number> = {
-    '4F': 0.377,
-    '5F': 0.14,
-  }
-  const currentScale = scaleConfig[props.floor] || 0.188
+  const currentScale = floorScaleMap[props.floor] || 0.188
 
-  const imgX = (-2500 * currentScale) / 2
-  const imgY = (-2500 * currentScale) / 2
+  const imgX = (-mapBaseSize * currentScale) / 2
+  const imgY = (-mapBaseSize * currentScale) / 2
 
   const backgroundImage = new Image({
     x: imgX,
@@ -112,10 +126,6 @@ const initMap = async () => {
 
     seatRect.on('click', () => {
       const status = seat.spaceId ? props.seatStatusMap?.[seat.spaceId] : undefined
-      const statusText = status === 0 ? '可预约' : status === undefined ? '未查询' : '不可用'
-      console.log(
-        `该座位：spaceName：${seat.spaceName}，spaceId：${seat.spaceId}，spaceCode：${seat.spaceCode}，mapName：${seat.mapName}，状态：${statusText}`,
-      )
       emit('select-seat', { seat, status })
     })
 
@@ -147,10 +157,6 @@ const applySeatStatuses = () => {
   }
 }
 
-onMounted(() => {
-  initMap()
-})
-
 watch(
   () => props.floor,
   () => {
@@ -168,6 +174,14 @@ watch(
 onUnmounted(() => {
   resizeObserver.value?.disconnect()
   if (leaferRef.value) leaferRef.value.destroy()
+})
+
+onMounted(() => {
+  initMap()
+})
+
+onActivated(() => {
+  if (!leaferRef.value) initMap()
 })
 </script>
 
