@@ -7,6 +7,7 @@ import { computed, onMounted, ref, toRef, watch } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { ViewTabs } from '@/components/common'
 import { SeatMap, SeatReservationSheet, SeatSidebar } from '@/components/seat'
+import { MobileTopCard, MobileBottomBar, MobileQuerySheet } from '@/components/mobile'
 import { useSeatReservation } from '@/composables/useSeatReservation'
 import { useSeatQuery } from '@/composables/useSeatQuery'
 import { loadSeatData } from '@/utils/seatData'
@@ -74,11 +75,16 @@ const {
 })
 
 const sheetOpen = ref(false)
+const querySheetOpen = ref(false)
 
 const openSheetForSeat = (seat: SeatRecord) => {
   selectedSeat.value = seat
   resetReservationState()
   sheetOpen.value = true
+}
+
+const openQuerySheet = () => {
+  querySheetOpen.value = true
 }
 
 onMounted(() => {
@@ -98,6 +104,33 @@ watch(
     <template #mobile-tabs>
       <ViewTabs />
     </template>
+
+    <!-- 移动端浮动控制区 -->
+    <template #mobile-controls>
+      <MobileTopCard :floor="props.floor" @update:floor="emit('update:floor', $event)" />
+      <MobileBottomBar
+        :selected-date="selectedDate"
+        :start-time="startTime"
+        :end-time="endTime"
+        :is-querying="isQuerying"
+        @open-query="openQuerySheet"
+      />
+      <MobileQuerySheet
+        v-model:open="querySheetOpen"
+        :selected-date="selectedDate"
+        :start-time="startTime"
+        :end-time="endTime"
+        :time-options="timeOptions"
+        :is-querying="isQuerying"
+        :error-message="errorMessage"
+        :last-query-time="lastQueryTime"
+        @update:selectedDate="selectedDate = $event"
+        @update:startTime="startTime = $event"
+        @update:endTime="endTime = $event"
+        @query="handleQuery"
+      />
+    </template>
+
     <template #main>
       <SeatMap
         :floor="props.floor"
@@ -142,5 +175,4 @@ watch(
   </AppLayout>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

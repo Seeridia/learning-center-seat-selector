@@ -190,6 +190,7 @@ onBeforeUnmount(() => {
   inset: 0;
   background: rgba(24, 20, 14, 0.32);
   backdrop-filter: blur(8px);
+  z-index: 300;
 }
 
 .sheet {
@@ -197,6 +198,7 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 310;
   margin: 0 auto;
   background: var(--panel);
   border-radius: 18px 18px 0 0;

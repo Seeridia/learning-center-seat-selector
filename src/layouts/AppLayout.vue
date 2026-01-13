@@ -13,8 +13,13 @@ withDefaults(
 
 <template>
   <Primitive class="app-layout" :data-view="view">
-    <div class="mobile-tabs">
+    <!-- 桌面端 tabs -->
+    <div class="mobile-tabs desktop-only">
       <slot name="mobile-tabs" />
+    </div>
+    <!-- 移动端浮动控制区 -->
+    <div class="mobile-controls">
+      <slot name="mobile-controls" />
     </div>
     <Primitive class="main-area">
       <slot name="main" />
@@ -59,26 +64,40 @@ withDefaults(
   display: none;
 }
 
+.mobile-controls {
+  display: contents;
+}
+
+.desktop-only {
+  display: none;
+}
+
 @media (max-width: 960px) {
   .app-layout {
     flex-direction: column;
   }
 
+  /* 移动端隐藏所有 mobile-tabs */
   .mobile-tabs {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 12px 16px;
-    background: var(--panel-soft);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--panel-shadow-md);
-  }
-
-  .mobile-tabs .view-tabs {
-    margin-bottom: 0;
+    display: none !important;
   }
 
   .view-tabs {
+    display: none;
+  }
+
+  /* 座位页面：地图全屏，隐藏 sidebar */
+  .app-layout[data-view='seat'] .sidebar {
+    display: none;
+  }
+
+  .app-layout[data-view='seat'] .main-area {
+    height: 100vh;
+    min-height: 100vh;
+  }
+
+  /* 历史页面：隐藏 sidebar */
+  .app-layout[data-view='history'] .sidebar {
     display: none;
   }
 
@@ -95,11 +114,8 @@ withDefaults(
   }
 
   .main-area {
-    min-height: 56vh;
-  }
-
-  .app-layout[data-view='history'] .sidebar {
-    display: none;
+    flex: 1;
+    min-height: 0;
   }
 }
 </style>

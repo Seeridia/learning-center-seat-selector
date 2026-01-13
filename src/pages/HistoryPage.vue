@@ -2,6 +2,7 @@
 import { Primitive } from 'reka-ui'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { ViewTabs } from '@/components/common'
+import { MobileNavButton } from '@/components/mobile'
 import { ReservationHistoryContainer, ReservationHistoryView } from '@/components/reservation'
 
 defineProps<{
@@ -12,8 +13,8 @@ defineProps<{
 
 <template>
   <AppLayout view="history">
-    <template #mobile-tabs>
-      <ViewTabs />
+    <template #mobile-controls>
+      <MobileNavButton />
     </template>
     <template #main>
       <ReservationHistoryContainer :token="token" :active="true" v-slot="history">
