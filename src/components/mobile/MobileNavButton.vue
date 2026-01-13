@@ -7,7 +7,7 @@ const isOnSeatPage = computed(() => route.name === 'seat')
 </script>
 
 <template>
-  <RouterLink class="mobile-nav-button" :to="isOnSeatPage ? '/history' : '/seat'">
+  <RouterLink class="mobile-nav-button" :to="isOnSeatPage ? '/history' : '/'">
     <!-- 历史图标 -->
     <svg
       v-if="isOnSeatPage"

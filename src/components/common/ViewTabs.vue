@@ -11,7 +11,7 @@ const activeName = computed(() => route.name)
     <RouterLink
       class="view-tab"
       :data-active="activeName === 'seat'"
-      to="/seat"
+      to="/"
     >
       选座
     </RouterLink>

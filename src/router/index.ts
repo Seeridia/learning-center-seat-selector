@@ -7,10 +7,6 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/seat',
-    },
-    {
-      path: '/seat',
       name: 'seat',
       component: SeatPage,
     },

@@ -38,7 +38,7 @@ const timeRange = computed(() => {
 <template>
   <div class="mobile-bottom-bar">
     <!-- 左侧：导航按钮 -->
-    <RouterLink class="nav-button" :to="isOnSeatPage ? '/history' : '/seat'">
+    <RouterLink class="nav-button" :to="isOnSeatPage ? '/history' : '/'">
       <!-- 历史图标 -->
       <svg
         v-if="isOnSeatPage"
