@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import MobileNavIcon from './MobileNavIcon.vue'
+import QueryStatusIcon from './QueryStatusIcon.vue'
 
 const props = defineProps<{
   selectedDate: string
@@ -39,37 +41,7 @@ const timeRange = computed(() => {
   <div class="mobile-bottom-bar">
     <!-- 左侧：导航按钮 -->
     <RouterLink class="nav-button" :to="isOnSeatPage ? '/history' : '/'">
-      <!-- 历史图标 -->
-      <svg
-        v-if="isOnSeatPage"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-      <!-- 地图图标 -->
-      <svg
-        v-else
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
-        <line x1="8" y1="2" x2="8" y2="18" />
-        <line x1="16" y1="6" x2="16" y2="22" />
-      </svg>
+      <MobileNavIcon :is-on-seat-page="isOnSeatPage" />
     </RouterLink>
 
     <!-- 中间：时间显示（点击打开查询面板） -->
@@ -94,36 +66,7 @@ const timeRange = computed(() => {
 
     <!-- 右侧：查询按钮 -->
     <button class="query-button" type="button" :disabled="isQuerying" @click="emit('openQuery')">
-      <svg
-        v-if="!isQuerying"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="M21 21l-4.35-4.35" />
-      </svg>
-      <svg
-        v-else
-        class="spinning"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-      >
-        <path
-          d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
-          opacity="0.3"
-        />
-        <path d="M12 2v4" />
-      </svg>
+      <QueryStatusIcon :is-querying="isQuerying" />
     </button>
   </div>
 </template>
@@ -196,7 +139,8 @@ const timeRange = computed(() => {
   gap: 6px;
   border: none;
   background: var(--panel);
-  padding: 10px 16px;
+  height: 44px;
+  padding: 0 16px;
   border-radius: 999px;
   cursor: pointer;
   box-shadow:
@@ -272,16 +216,4 @@ const timeRange = computed(() => {
   cursor: not-allowed;
 }
 
-.spinning {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 </style>
