@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { Primitive } from 'reka-ui'
-import AppLayout from '../layouts/AppLayout.vue'
-import ViewTabs from '../components/ViewTabs.vue'
-import ReservationHistoryContainer from '../components/reservation/ReservationHistoryContainer.vue'
-import ReservationHistoryView from '../components/reservation/ReservationHistoryView.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import { ViewTabs } from '@/components/common'
+import { ReservationHistoryContainer, ReservationHistoryView } from '@/components/reservation'
 
 defineProps<{
   token: string

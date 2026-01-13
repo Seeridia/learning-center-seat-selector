@@ -3,21 +3,14 @@ defineOptions({
   name: 'SeatPage',
 })
 
-import { Primitive } from 'reka-ui'
 import { computed, onMounted, ref, toRef, watch } from 'vue'
-import AppLayout from '../layouts/AppLayout.vue'
-import FloorSelectorCard from '../components/FloorSelectorCard.vue'
-import ViewTabs from '../components/ViewTabs.vue'
-import IosSheet from '../components/reservation/IosSheet.vue'
-import ReservationSeatCard from '../components/reservation/ReservationSeatCard.vue'
-import ReservationTimeCard from '../components/reservation/ReservationTimeCard.vue'
-import SeatMap from '../components/seatMap.vue'
-import SeatQueryPanel from '../components/SeatQueryPanel.vue'
-import SeatStatsCard from '../components/SeatStatsCard.vue'
-import { useSeatReservation } from '../composables/useSeatReservation'
-import { useSeatQuery } from '../composables/useSeatQuery'
-import { loadSeatData } from '../utils/seatData'
-import type { SeatRecord } from '../types/seat'
+import AppLayout from '@/layouts/AppLayout.vue'
+import { ViewTabs } from '@/components/common'
+import { SeatMap, SeatReservationSheet, SeatSidebar } from '@/components/seat'
+import { useSeatReservation } from '@/composables/useSeatReservation'
+import { useSeatQuery } from '@/composables/useSeatQuery'
+import { loadSeatData } from '@/utils/seatData'
+import type { SeatRecord } from '@/types/seat'
 
 const props = defineProps<{
   floor: '4F' | '5F'
@@ -80,13 +73,6 @@ const {
   seatStatusMap,
 })
 
-const selectedSeatStatusText = computed(() => {
-  const status = selectedSeatStatus.value
-  if (status === 0) return '可预约'
-  if (status === undefined || status === null || Number.isNaN(status)) return '未查询'
-  return '不可用'
-})
-
 const sheetOpen = ref(false)
 
 const openSheetForSeat = (seat: SeatRecord) => {
@@ -120,125 +106,41 @@ watch(
       />
     </template>
     <template #sidebar>
-      <Primitive class="sidebar-header">
-        <Primitive as="p" class="eyebrow">Learning Center</Primitive>
-        <Primitive as="h2">学习中心</Primitive>
-        <Primitive as="p" class="subtle">福州大学 学习中心预约平台</Primitive>
-      </Primitive>
-      <ViewTabs />
-      <FloorSelectorCard :floor="props.floor" @update:floor="emit('update:floor', $event)" />
-      <SeatQueryPanel
-        v-model:selectedDate="selectedDate"
-        v-model:startTime="startTime"
-        v-model:endTime="endTime"
+      <SeatSidebar
+        :floor="props.floor"
+        :selected-date="selectedDate"
+        :start-time="startTime"
+        :end-time="endTime"
         :time-options="timeOptions"
         :is-querying="isQuerying"
         :error-message="errorMessage"
         :last-query-time="lastQueryTime"
-        @query="handleQuery"
-      />
-      <SeatStatsCard
         :available-count="availableCount"
         :unavailable-count="unavailableCount"
         :unknown-count="unknownCount"
         :total-seats="totalSeats"
+        @update:floor="emit('update:floor', $event)"
+        @update:selectedDate="selectedDate = $event"
+        @update:startTime="startTime = $event"
+        @update:endTime="endTime = $event"
+        @query="handleQuery"
       />
     </template>
 
-    <IosSheet
+    <SeatReservationSheet
       v-model:open="sheetOpen"
-      title="确认预约"
-      description="请核对座位与时间后提交预约"
-    >
-      <ReservationSeatCard :seat="selectedSeat" :status-text="selectedSeatStatusText" />
-      <ReservationTimeCard
-        :selected-date="selectedDate"
-        :start-time="startTime"
-        :end-time="endTime"
-      />
-      <p v-if="reservationMessage" class="sheet-message" :data-success="reservationSuccess">
-        {{ reservationMessage }}
-      </p>
-      <template #footer>
-        <button
-          class="sheet-primary"
-          type="button"
-          :disabled="isSubmitting || selectedSeatStatus !== 0 || reservationSuccess"
-          @click="submitReservation"
-        >
-          {{ isSubmitting ? '提交中...' : reservationSuccess ? '已预约' : '确认预约' }}
-        </button>
-        <button class="sheet-secondary" type="button" @click="sheetOpen = false">
-          暂不预约
-        </button>
-      </template>
-    </IosSheet>
+      :selected-seat="selectedSeat"
+      :selected-seat-status="selectedSeatStatus"
+      :selected-date="selectedDate"
+      :start-time="startTime"
+      :end-time="endTime"
+      :is-submitting="isSubmitting"
+      :reservation-message="reservationMessage"
+      :reservation-success="reservationSuccess"
+      @submit="submitReservation"
+    />
   </AppLayout>
 </template>
 
 <style scoped>
-.sidebar-header {
-  margin-bottom: 18px;
-}
-
-.sidebar-header h2 {
-  margin: 6px 0;
-  font-size: 22px;
-  letter-spacing: 0.06em;
-}
-
-.eyebrow {
-  margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.4em;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-
-.subtle {
-  margin: 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.sheet-message {
-  margin: 0;
-  font-size: 13px;
-  color: var(--danger);
-}
-
-.sheet-message[data-success='true'] {
-  color: var(--success);
-}
-
-.sheet-primary {
-  border: none;
-  padding: 12px 16px;
-  border-radius: 999px;
-  background: var(--accent-strong);
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
-}
-
-.sheet-primary:not(:disabled):hover {
-  transform: translateY(-1px);
-  box-shadow: var(--panel-shadow-float);
-}
-
-.sheet-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.sheet-secondary {
-  border: 1px solid var(--border);
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--accent-strong);
-  cursor: pointer;
-  font-size: 14px;
-}
 </style>

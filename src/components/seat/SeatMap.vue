@@ -79,7 +79,7 @@ const initMap = async () => {
     danger: getThemeColor('--danger', '#d54941'),
   }
 
-  const backgroundImageUrl = new URL(`../assets/background/${props.floor}.webp`, import.meta.url)
+  const backgroundImageUrl = new URL(`../../assets/background/${props.floor}.webp`, import.meta.url)
     .href
 
   const leafer = new Leafer({

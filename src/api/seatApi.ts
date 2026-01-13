@@ -1,4 +1,4 @@
-import { seatApi } from './http'
+import { seatApi } from '@/api/http'
 import type {
   AddSpaceAppointPayload,
   ReservationHistoryPayload,

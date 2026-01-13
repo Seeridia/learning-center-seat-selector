@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SeatRecord } from '../../types/seat'
+import type { SeatRecord } from '@/types/seat'
 
 const props = defineProps<{
   seat: SeatRecord | null

@@ -1,45 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { fetchLoginToken } from './api/authApi'
-import LoginView from './components/LoginView.vue'
+import { storeToRefs } from 'pinia'
+import { LoginView } from '@/components/common'
 import { RouterView } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useFloorStore } from '@/stores/floor'
 
-const TOKEN_KEY = 'learning_center_token'
+const authStore = useAuthStore()
+const floorStore = useFloorStore()
 
-const currentFloor = ref<'4F' | '5F'>('4F')
-const token = ref<string | null>(null)
-const studentId = ref('')
-const password = ref('')
-const errorMessage = ref('')
-const isLoading = ref(false)
-
-const isLoggedIn = computed(() => Boolean(token.value))
-
-onMounted(() => {
-  token.value = localStorage.getItem(TOKEN_KEY)
-})
-
-const handleLogin = async (username: string, userPassword: string) => {
-  errorMessage.value = ''
-  isLoading.value = true
-  try {
-    const response = await fetchLoginToken({
-      username: username.trim(),
-      password: userPassword,
-    })
-    const fetchedToken = response?.data?.token
-    if (!fetchedToken) {
-      throw new Error('未获取到 token')
-    }
-    localStorage.setItem(TOKEN_KEY, fetchedToken)
-    token.value = fetchedToken
-    password.value = ''
-  } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : '登录失败，请重试'
-  } finally {
-    isLoading.value = false
-  }
-}
+const { token, studentId, password, errorMessage, isLoading, isLoggedIn } = storeToRefs(authStore)
+const { currentFloor } = storeToRefs(floorStore)
 </script>
 
 <template>
@@ -49,7 +19,7 @@ const handleLogin = async (username: string, userPassword: string) => {
     v-model:password="password"
     :loading="isLoading"
     :error="errorMessage"
-    @submit="handleLogin"
+    @submit="authStore.login"
   />
   <RouterView v-else v-slot="{ Component }">
     <KeepAlive include="SeatPage">
@@ -57,7 +27,7 @@ const handleLogin = async (username: string, userPassword: string) => {
         :is="Component"
         :floor="currentFloor"
         :token="token || ''"
-        @update:floor="currentFloor = $event"
+        @update:floor="floorStore.setFloor"
       />
     </KeepAlive>
   </RouterView>
