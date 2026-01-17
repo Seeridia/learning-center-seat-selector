@@ -1,13 +1,13 @@
 {
   "name": "learning-center-seat-selector",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -19,6 +19,8 @@
     "@leafer-in/viewport": "^1.12.2",
     "@leafer-ui/core": "^1.12.2",
     "@leafer-ui/draw": "^1.12.2",
+    "@tauri-apps/api": "^2.9.1",
+    "@tauri-apps/plugin-log": "^2.8.0",
     "axios": "^1.13.2",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.19",

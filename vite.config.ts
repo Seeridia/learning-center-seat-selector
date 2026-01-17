@@ -15,16 +15,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  server: {
-    proxy: {
-      '/fzu-sso': {
-        target: 'https://sso.fzu.edu.cn',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/fzu-sso/, ''),
-        headers: {
-          Referer: 'https://sso.fzu.edu.cn/',
-        }
-      }
-    }
-  }
 })
