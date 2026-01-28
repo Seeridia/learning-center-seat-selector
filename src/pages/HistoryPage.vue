@@ -6,7 +6,6 @@ import { MobileNavButton } from '@/components/mobile'
 import { ReservationHistoryContainer, ReservationHistoryView } from '@/components/reservation'
 
 defineProps<{
-  token: string
   floor?: '4F' | '5F'
 }>()
 </script>
@@ -17,7 +16,7 @@ defineProps<{
       <MobileNavButton />
     </template>
     <template #main>
-      <ReservationHistoryContainer :token="token" :active="true" v-slot="history">
+      <ReservationHistoryContainer :active="true" v-slot="history">
         <ReservationHistoryView
           :records="history.records"
           :is-loading="history.isLoading"

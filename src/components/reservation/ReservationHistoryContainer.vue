@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRef, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useReservationHistory } from '@/composables/useReservationHistory'
 
 const props = defineProps<{
-  token: string
   active?: boolean
 }>()
 
-const history = useReservationHistory({
-  token: toRef(props, 'token'),
-})
+const history = useReservationHistory()
 
 const hasFetched = ref(false)
 

@@ -1,12 +1,8 @@
-import { computed, ref, type Ref } from 'vue'
-import { queryMyAppoint } from '@/api/seatApi'
+import { computed, ref } from 'vue'
+import { queryMyAppoint } from '@/api'
 import type { ReservationHistoryRecord } from '@/types/api'
 
-type UseReservationHistoryOptions = {
-  token: Ref<string>
-}
-
-export const useReservationHistory = ({ token }: UseReservationHistoryOptions) => {
+export const useReservationHistory = () => {
   const records = ref<ReservationHistoryRecord[]>([])
   const isLoading = ref(false)
   const errorMessage = ref('')
@@ -24,13 +20,10 @@ export const useReservationHistory = ({ token }: UseReservationHistoryOptions) =
     errorMessage.value = ''
     isLoading.value = true
     try {
-      const response = await queryMyAppoint(
-        {
-          currentPage: currentPage.value,
-          pageSize: pageSize.value,
-        },
-        token.value,
-      )
+      const response = await queryMyAppoint({
+        currentPage: currentPage.value,
+        pageSize: pageSize.value,
+      })
       const data = response?.data
       if (data?.code !== '0') {
         throw new Error(data?.msg || '查询失败')

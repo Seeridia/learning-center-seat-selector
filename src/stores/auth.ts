@@ -1,8 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { fetchLoginToken } from '@/api/authApi'
-
-const TOKEN_KEY = 'learning_center_token'
+import { fetchLoginToken, setSeatApiToken } from '@/api'
+import { tokenStore } from '@/stores/tokenStore'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
@@ -14,7 +13,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => Boolean(token.value))
 
   const initFromStorage = () => {
-    token.value = localStorage.getItem(TOKEN_KEY)
+    token.value = tokenStore.get()
+    setSeatApiToken(token.value)
   }
 
   const login = async (username: string, userPassword: string) => {
@@ -29,8 +29,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (!fetchedToken) {
         throw new Error('未获取到 token')
       }
-      localStorage.setItem(TOKEN_KEY, fetchedToken)
+      tokenStore.set(fetchedToken)
       token.value = fetchedToken
+      setSeatApiToken(fetchedToken)
       password.value = ''
     } catch (error) {
       errorMessage.value = error instanceof Error ? error.message : '登录失败，请重试'
@@ -40,8 +41,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const logout = () => {
-    localStorage.removeItem(TOKEN_KEY)
+    tokenStore.clear()
     token.value = null
+    setSeatApiToken(null)
   }
 
   return {

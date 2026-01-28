@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -40,6 +40,80 @@ const endTimeModel = computed({
   set: (value: string) => emit('update:endTime', value),
 })
 
+const dateOptions = computed(() => {
+  const options: Array<{ value: string; day: string; weekday: string }> = []
+  const today = new Date()
+  const formatter = new Intl.DateTimeFormat('zh-CN', { weekday: 'short' })
+  for (let offset = 0; offset < 8; offset += 1) {
+    const date = new Date(today)
+    date.setDate(today.getDate() + offset)
+    const value = date.toISOString().slice(0, 10)
+    options.push({
+      value,
+      day: String(date.getDate()).padStart(2, '0'),
+      weekday: formatter.format(date),
+    })
+  }
+  return options
+})
+
+const selectedRange = computed(() => {
+  const startIndex = props.timeOptions.indexOf(props.startTime)
+  const endIndex = props.timeOptions.indexOf(props.endTime)
+  return {
+    startIndex,
+    endIndex,
+    hasRange: startIndex >= 0 && endIndex >= 0 && endIndex > startIndex,
+  }
+})
+
+const isSelectingStart = ref(true)
+const MAX_DURATION_STEPS = 9
+
+const isStartTime = (option: string) => option === props.startTime
+const isEndTime = (option: string) => option === props.endTime
+const isInRange = (option: string) => {
+  const { startIndex, endIndex, hasRange } = selectedRange.value
+  if (!hasRange) return false
+  const currentIndex = props.timeOptions.indexOf(option)
+  return currentIndex > startIndex && currentIndex < endIndex
+}
+
+const handleTimeClick = (option: string) => {
+  const startIndex = props.timeOptions.indexOf(props.startTime)
+  const clickedIndex = props.timeOptions.indexOf(option)
+
+  const hasRange = Boolean(props.startTime && props.endTime)
+
+  if (hasRange) {
+    startTimeModel.value = option
+    endTimeModel.value = ''
+    isSelectingStart.value = false
+    return
+  }
+
+  if (isSelectingStart.value || !props.startTime) {
+    startTimeModel.value = option
+    isSelectingStart.value = false
+    return
+  }
+
+  if (clickedIndex <= startIndex) {
+    startTimeModel.value = option
+    endTimeModel.value = ''
+    isSelectingStart.value = false
+    return
+  }
+
+  const durationSteps = clickedIndex - startIndex
+  if (durationSteps > MAX_DURATION_STEPS) {
+    endTimeModel.value = props.timeOptions[startIndex + MAX_DURATION_STEPS] ?? option
+  } else {
+    endTimeModel.value = option
+  }
+  isSelectingStart.value = true
+}
+
 const idleLabel = computed(() => {
   if (props.submitLabel) return props.submitLabel
   return props.variant === 'mobile' ? '查询座位' : '查询'
@@ -50,28 +124,43 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
 
 <template>
   <div class="seat-query-form" :data-variant="props.variant">
-    <label class="field">
+    <div class="date-row">
       <span class="field-label">日期</span>
-      <input v-model="selectedDateModel" type="date" class="input" />
-    </label>
+      <div class="date-grid">
+        <button
+          v-for="option in dateOptions"
+          :key="option.value"
+          type="button"
+          class="date-cell"
+          :class="{ 'is-selected': option.value === props.selectedDate }"
+          :disabled="isQuerying"
+          @click="selectedDateModel = option.value"
+        >
+          <span class="date-day">{{ option.day }}</span>
+          <span class="date-week">{{ option.weekday }}</span>
+        </button>
+      </div>
+    </div>
 
     <div class="time-row">
-      <label class="field">
-        <span class="field-label">开始时间</span>
-        <select v-model="startTimeModel" class="input">
-          <option v-for="option in timeOptions" :key="option" :value="option">
-            {{ option }}
-          </option>
-        </select>
-      </label>
-      <label class="field">
-        <span class="field-label">结束时间</span>
-        <select v-model="endTimeModel" class="input">
-          <option v-for="option in timeOptions" :key="option" :value="option">
-            {{ option }}
-          </option>
-        </select>
-      </label>
+      <span class="field-label">选择时间段</span>
+      <div class="time-grid">
+        <button
+          v-for="option in timeOptions"
+          :key="option"
+          type="button"
+          class="time-cell"
+          :class="{
+            'is-start': isStartTime(option),
+            'is-end': isEndTime(option),
+            'is-range': isInRange(option),
+          }"
+          :disabled="isQuerying"
+          @click="handleTimeClick(option)"
+        >
+          {{ option }}
+        </button>
+      </div>
     </div>
 
     <button class="query-button" type="button" :disabled="isQuerying" @click="emit('query')">
@@ -123,9 +212,98 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
 }
 
 .time-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.date-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.date-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.date-cell {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 6px;
+  background: var(--control-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.date-cell.is-selected {
+  background: var(--accent-strong);
+  border-color: transparent;
+  color: #fff;
+}
+
+.date-cell:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.date-day {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.date-week {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.time-cell {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 8px;
+  background: var(--control-bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.time-cell.is-range {
+  background: rgba(160, 122, 71, 0.12);
+  border-color: rgba(160, 122, 71, 0.35);
+}
+
+.time-cell.is-start,
+.time-cell.is-end {
+  background: var(--accent-strong);
+  border-color: transparent;
+  color: #fff;
+}
+
+.time-cell:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .query-button {
@@ -195,8 +373,33 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
 }
 
 .seat-query-form[data-variant='desktop'] .time-row {
-  grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 8px;
+}
+
+.seat-query-form[data-variant='desktop'] .date-grid {
+  gap: 6px;
+}
+
+.seat-query-form[data-variant='desktop'] .date-cell {
+  padding: 8px 6px;
+}
+
+.seat-query-form[data-variant='desktop'] .date-day {
+  font-size: 14px;
+}
+
+.seat-query-form[data-variant='desktop'] .date-week {
+  font-size: 10px;
+}
+
+.seat-query-form[data-variant='desktop'] .time-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.seat-query-form[data-variant='desktop'] .time-cell {
+  padding: 8px 6px;
+  font-size: 12px;
 }
 
 .seat-query-form[data-variant='desktop'] .query-button {
@@ -218,7 +421,11 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
   text-align: left;
 }
 
-.seat-query-form[data-variant='mobile'] .time-row {
-  grid-template-columns: 1fr 1fr;
+.seat-query-form[data-variant='mobile'] .time-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.seat-query-form[data-variant='mobile'] .date-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 </style>

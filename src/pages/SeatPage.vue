@@ -3,7 +3,7 @@ defineOptions({
   name: 'SeatPage',
 })
 
-import { computed, onMounted, ref, toRef, watch } from 'vue'
+import { computed, ref, toRef, watch } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { ViewTabs } from '@/components/common'
 import { SeatMap, SeatReservationSheet, SeatSidebar } from '@/components/seat'
@@ -15,7 +15,6 @@ import type { SeatRecord } from '@/types/seat'
 
 const props = defineProps<{
   floor: '4F' | '5F'
-  token: string
 }>()
 
 const emit = defineEmits<{
@@ -33,24 +32,31 @@ const {
   lastQueryTime,
   handleQuery,
 } = useSeatQuery({
-  token: toRef(props, 'token'),
   floor: toRef(props, 'floor'),
 })
 
 const totalSeats = ref(0)
-const availableCount = computed(
-  () => Object.values(seatStatusMap.value).filter((status) => status === 0).length,
-)
-const unavailableCount = computed(
-  () =>
-    Object.values(seatStatusMap.value).filter(
-      (status) => status !== 0 && status !== undefined && status !== null && !Number.isNaN(status),
-    ).length,
-)
-const unknownCount = computed(() => {
-  const remaining = totalSeats.value - availableCount.value - unavailableCount.value
-  return remaining > 0 ? remaining : 0
+const seatSummary = computed(() => {
+  let available = 0
+  let unavailable = 0
+  for (const status of Object.values(seatStatusMap.value)) {
+    if (status === 0) {
+      available += 1
+    } else if (status !== undefined && status !== null && !Number.isNaN(status)) {
+      unavailable += 1
+    }
+  }
+  const unknown = Math.max(totalSeats.value - available - unavailable, 0)
+  return {
+    available,
+    unavailable,
+    unknown,
+  }
 })
+
+const availableCount = computed(() => seatSummary.value.available)
+const unavailableCount = computed(() => seatSummary.value.unavailable)
+const unknownCount = computed(() => seatSummary.value.unknown)
 
 const loadSeatTotals = async () => {
   const data = await loadSeatData(props.floor)
@@ -66,7 +72,6 @@ const {
   resetReservationState,
   submitReservation,
 } = useSeatReservation({
-  token: toRef(props, 'token'),
   selectedDate,
   startTime,
   endTime,
@@ -87,15 +92,12 @@ const openQuerySheet = () => {
   querySheetOpen.value = true
 }
 
-onMounted(() => {
-  loadSeatTotals()
-})
-
 watch(
   () => props.floor,
   () => {
     loadSeatTotals()
   },
+  { immediate: true },
 )
 </script>
 

@@ -8,7 +8,7 @@ import { useFloorStore } from '@/stores/floor'
 const authStore = useAuthStore()
 const floorStore = useFloorStore()
 
-const { token, studentId, password, errorMessage, isLoading, isLoggedIn } = storeToRefs(authStore)
+const { studentId, password, errorMessage, isLoading, isLoggedIn } = storeToRefs(authStore)
 const { currentFloor } = storeToRefs(floorStore)
 </script>
 
@@ -23,12 +23,7 @@ const { currentFloor } = storeToRefs(floorStore)
   />
   <RouterView v-else v-slot="{ Component }">
     <KeepAlive include="SeatPage">
-      <component
-        :is="Component"
-        :floor="currentFloor"
-        :token="token || ''"
-        @update:floor="floorStore.setFloor"
-      />
+      <component :is="Component" :floor="currentFloor" @update:floor="floorStore.setFloor" />
     </KeepAlive>
   </RouterView>
 </template>

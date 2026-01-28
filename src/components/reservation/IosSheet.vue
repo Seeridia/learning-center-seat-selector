@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
   box-shadow: var(--panel-shadow-float);
   display: flex;
   flex-direction: column;
-  padding: 6px 20px 20px;
+  padding: 20px;
   max-width: 560px;
   width: 100%;
   max-height: calc(100vh - 24px);

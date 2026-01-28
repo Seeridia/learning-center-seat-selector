@@ -1,15 +1,25 @@
 import { computed, ref, watch, type Ref } from 'vue'
-import { queryStationStatusByTime } from '@/api/seatApi'
+import { queryStationStatusByTime } from '@/api'
 import { loadSeatLookup } from '@/utils/seatData'
 
 type UseSeatQueryOptions = {
-  token: Ref<string>
   floor: Ref<'4F' | '5F'>
 }
 
 const pad = (value: number) => String(value).padStart(2, '0')
+const MAX_DURATION_MINUTES = 270
+const TIME_OPTIONS = (() => {
+  const options: string[] = []
+  for (let hour = 8; hour <= 22; hour += 1) {
+    const hourText = pad(hour)
+    options.push(`${hourText}:00`)
+    if (hour !== 22) options.push(`${hourText}:30`)
+  }
+  options.push('22:30')
+  return options
+})()
 
-export const useSeatQuery = ({ token, floor }: UseSeatQueryOptions) => {
+export const useSeatQuery = ({ floor }: UseSeatQueryOptions) => {
   const today = new Date()
   const defaultDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`
 
@@ -30,16 +40,7 @@ export const useSeatQuery = ({ token, floor }: UseSeatQueryOptions) => {
     region,
   }))
 
-  const timeOptions = computed(() => {
-    const options: string[] = []
-    for (let hour = 8; hour <= 22; hour += 1) {
-      const hourText = pad(hour)
-      options.push(`${hourText}:00`)
-      if (hour !== 22) options.push(`${hourText}:30`)
-    }
-    options.push('22:30')
-    return options
-  })
+  const timeOptions = computed(() => TIME_OPTIONS)
 
   const handleQuery = async () => {
     errorMessage.value = ''
@@ -47,11 +48,22 @@ export const useSeatQuery = ({ token, floor }: UseSeatQueryOptions) => {
       errorMessage.value = '请完整选择日期与时间'
       return
     }
+    if (startTime.value >= endTime.value) {
+      errorMessage.value = '结束时间需晚于开始时间'
+      return
+    }
+    const [startHour, startMinute] = startTime.value.split(':').map(Number)
+    const [endHour, endMinute] = endTime.value.split(':').map(Number)
+    const durationMinutes = (endHour - startHour) * 60 + (endMinute - startMinute)
+    if (durationMinutes > MAX_DURATION_MINUTES) {
+      errorMessage.value = '时间段最长为 4.5 小时'
+      return
+    }
 
     isQuerying.value = true
     seatStatusMap.value = {}
     try {
-      const response = await queryStationStatusByTime(queryPayload.value, token.value)
+      const response = await queryStationStatusByTime(queryPayload.value)
       const data = response?.data
       if (data?.code !== '0') {
         throw new Error(data?.msg || '查询失败')
@@ -84,6 +96,8 @@ export const useSeatQuery = ({ token, floor }: UseSeatQueryOptions) => {
     () => floor.value,
     () => {
       seatStatusMap.value = {}
+      errorMessage.value = ''
+      lastQueryTime.value = ''
     },
   )
 

@@ -1,9 +1,8 @@
 import { computed, ref, type Ref } from 'vue'
-import { addSpaceAppoint } from '@/api/seatApi'
+import { addSpaceAppoint } from '@/api'
 import type { SeatRecord } from '@/types/seat'
 
 type UseSeatReservationOptions = {
-  token: Ref<string>
   selectedDate: Ref<string>
   startTime: Ref<string>
   endTime: Ref<string>
@@ -12,7 +11,6 @@ type UseSeatReservationOptions = {
 }
 
 export const useSeatReservation = ({
-  token,
   selectedDate,
   startTime,
   endTime,
@@ -43,15 +41,12 @@ export const useSeatReservation = ({
     reservationMessage.value = ''
     reservationSuccess.value = false
     try {
-      const response = await addSpaceAppoint(
-        {
-          spaceId: selectedSeat.value.spaceId,
-          beginTime: startTime.value,
-          endTime: endTime.value,
-          date: selectedDate.value,
-        },
-        token.value,
-      )
+      const response = await addSpaceAppoint({
+        spaceId: selectedSeat.value.spaceId,
+        beginTime: startTime.value,
+        endTime: endTime.value,
+        date: selectedDate.value,
+      })
       const data = response?.data
       if (data?.code !== '0') {
         throw new Error(data?.msg || '预约失败')
