@@ -186,36 +186,10 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
   gap: 16px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .field-label {
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
-}
-
-.input {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  background: var(--control-bg);
-  font-size: 16px; /* 防止 iOS 缩放 */
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.input:focus {
-  outline: none;
-  border-color: rgba(160, 122, 71, 0.6);
-  box-shadow: 0 0 0 3px rgba(160, 122, 71, 0.16);
 }
 
 .time-row {
@@ -379,19 +353,9 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
   gap: 12px;
 }
 
-.seat-query-form[data-variant='desktop'] .field {
-  gap: 6px;
-  margin-bottom: 0;
-}
-
 .seat-query-form[data-variant='desktop'] .field-label {
   font-size: 13px;
   font-weight: 500;
-}
-
-.seat-query-form[data-variant='desktop'] .input {
-  padding: 9px 12px;
-  font-size: 14px;
 }
 
 .seat-query-form[data-variant='desktop'] .time-row {
