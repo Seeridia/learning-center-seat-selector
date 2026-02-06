@@ -19,9 +19,19 @@ const emit = defineEmits<{
 const route = useRoute()
 const isOnSeatPage = computed(() => route.name === 'seat')
 
+const parseLocalDate = (value: string) => {
+  const [yearText, monthText, dayText] = value.split('-')
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) return null
+  return new Date(year, month - 1, day)
+}
+
 const formattedDate = computed(() => {
   if (!props.selectedDate) return '今天'
-  const date = new Date(props.selectedDate)
+  const date = parseLocalDate(props.selectedDate)
+  if (!date) return props.selectedDate
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
