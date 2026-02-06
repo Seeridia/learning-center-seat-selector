@@ -23,7 +23,6 @@ const emit = defineEmits<{
 
 const handleQuery = () => {
   emit('query')
-  emit('update:open', false)
 }
 </script>
 
