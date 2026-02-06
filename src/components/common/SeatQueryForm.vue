@@ -264,6 +264,11 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
   cursor: not-allowed;
 }
 
+.date-cell:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
 .date-day {
   font-size: 16px;
   font-weight: 700;
@@ -313,6 +318,11 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
   cursor: not-allowed;
 }
 
+.time-cell:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
 .query-button {
   width: 100%;
   border: none;
@@ -342,6 +352,11 @@ const buttonText = computed(() => (props.isQuerying ? '查询中...' : idleLabel
 .query-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.query-button:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 3px;
 }
 
 .error {

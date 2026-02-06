@@ -140,6 +140,11 @@ const timeRange = computed(() => {
   transform: translateY(0) scale(0.95);
 }
 
+.nav-button:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
 /* 时间显示按钮 */
 .time-display {
   flex: 1;
@@ -168,6 +173,11 @@ const timeRange = computed(() => {
 
 .time-display:active {
   transform: scale(0.98);
+}
+
+.time-display:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
 }
 
 .time-text {
@@ -224,6 +234,11 @@ const timeRange = computed(() => {
 .query-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.query-button:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
 }
 
 </style>

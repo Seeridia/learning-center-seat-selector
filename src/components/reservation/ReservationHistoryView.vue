@@ -277,6 +277,11 @@ const formatLocation = (record: ReservationHistoryRecord) =>
   cursor: not-allowed;
 }
 
+.ghost:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
 .error {
   margin: 0 0 12px;
   color: var(--danger);
