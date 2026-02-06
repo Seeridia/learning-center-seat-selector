@@ -87,6 +87,10 @@ const requestClose = () => {
   animateClose()
 }
 
+const handleDialogOpenChange = (value: boolean) => {
+  if (!value) requestClose()
+}
+
 const onDragMove = (event: PointerEvent) => {
   if (!isDragging.value) return
   const delta = Math.max(event.clientY - dragStartY.value, 0)
@@ -152,7 +156,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <DialogRoot :open="renderOpen">
+  <DialogRoot :open="renderOpen" @update:open="handleDialogOpenChange">
     <DialogPortal>
       <DialogOverlay class="sheet-overlay" @click="requestClose" />
       <DialogContent as-child>
