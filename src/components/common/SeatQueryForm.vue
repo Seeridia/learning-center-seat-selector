@@ -30,6 +30,13 @@ const selectedDateModel = computed({
   set: (value: string) => emit('update:selectedDate', value),
 })
 
+const formatLocalDate = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const startTimeModel = computed({
   get: () => props.startTime,
   set: (value: string) => emit('update:startTime', value),
@@ -47,7 +54,7 @@ const dateOptions = computed(() => {
   for (let offset = 0; offset < 8; offset += 1) {
     const date = new Date(today)
     date.setDate(today.getDate() + offset)
-    const value = date.toISOString().slice(0, 10)
+    const value = formatLocalDate(date)
     options.push({
       value,
       day: String(date.getDate()).padStart(2, '0'),
