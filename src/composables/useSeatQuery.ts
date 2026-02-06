@@ -8,6 +8,15 @@ type UseSeatQueryOptions = {
 
 const pad = (value: number) => String(value).padStart(2, '0')
 const MAX_DURATION_MINUTES = 270
+const parseTimeToMinutes = (value: string): number | null => {
+  const [hourText, minuteText, ...rest] = value.split(':')
+  if (rest.length > 0 || hourText == null || minuteText == null) return null
+  const hour = Number(hourText)
+  const minute = Number(minuteText)
+  if (!Number.isInteger(hour) || !Number.isInteger(minute)) return null
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null
+  return hour * 60 + minute
+}
 const TIME_OPTIONS = (() => {
   const options: string[] = []
   for (let hour = 8; hour <= 22; hour += 1) {
@@ -52,9 +61,13 @@ export const useSeatQuery = ({ floor }: UseSeatQueryOptions) => {
       errorMessage.value = '结束时间需晚于开始时间'
       return
     }
-    const [startHour, startMinute] = startTime.value.split(':').map(Number)
-    const [endHour, endMinute] = endTime.value.split(':').map(Number)
-    const durationMinutes = (endHour - startHour) * 60 + (endMinute - startMinute)
+    const startMinutes = parseTimeToMinutes(startTime.value)
+    const endMinutes = parseTimeToMinutes(endTime.value)
+    if (startMinutes == null || endMinutes == null) {
+      errorMessage.value = '时间格式无效，请重新选择'
+      return
+    }
+    const durationMinutes = endMinutes - startMinutes
     if (durationMinutes > MAX_DURATION_MINUTES) {
       errorMessage.value = '时间段最长为 4.5 小时'
       return

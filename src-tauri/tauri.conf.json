@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' data: blob: asset: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-eval'; connect-src 'self' http://localhost:5173 ws://localhost:5173 https://aiot.fzu.edu.cn https://gettoken.learning.seeridia.top"
     }
   },
   "bundle": {
